@@ -70,6 +70,12 @@
                     @csrf
                     <button type="submit" class="btn btn-ghost btn-sm">Logout</button>
                 </form>
+
+                @if(auth()->user()->is_admin)
+                    <a href="{{ route('admin.dashboard') }}" class="btn btn-primary btn-sm">
+                        Admin Dashboard
+                    </a>
+                @endif
             @else
                 <a href="/login" class="btn btn-ghost btn-sm">Sign In</a>
                 <a href="{{ route('register') }}" class="btn btn-primary btn-sm">Sign Up</a>

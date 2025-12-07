@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Auth\Login;
 use App\Http\Controllers\Auth\Logout;
 use App\Http\Controllers\Auth\Register;
@@ -36,3 +37,16 @@ Route::post('/login', Login::class)
 Route::post('/logout', Logout::class)
     ->middleware('auth')
     ->name('logout');
+
+// Admin Routes
+Route::middleware(['auth', \App\Http\Middleware\IsAdmin::class])->prefix('admin')->group(function () {
+    Route::get('/', [AdminController::class, 'index'])->name('admin.dashboard');
+    
+    Route::get('/users', [AdminController::class, 'users'])->name('admin.users');
+    Route::delete('/users/{user}', [AdminController::class, 'destroyUser'])->name('admin.users.destroy');
+    
+    Route::get('/chirps', [AdminController::class, 'chirps'])->name('admin.chirps');
+    Route::get('/chirps/{chirp}/edit', [AdminController::class, 'editChirp'])->name('admin.chirps.edit');
+    Route::put('/chirps/{chirp}', [AdminController::class, 'updateChirp'])->name('admin.chirps.update');
+    Route::delete('/chirps/{chirp}', [AdminController::class, 'destroyChirp'])->name('admin.chirps.destroy');
+});
