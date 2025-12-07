@@ -22,7 +22,59 @@
     }
 }
 
-/* CHIRPER CUSTOM LARAVEL THEME */
+/* ============================================ */
+/* DARK THEME (DEFAULT)                         */
+/* ============================================ */
+:root,
+:root:has(input.theme-controller[value=darkChirper]:checked),
+[data-theme="darkChirper"] {
+  color-scheme: dark;
+
+  /* Canvas + backgrounds (rich dark grays) */
+  --color-base-50:  #0d1117;  /* deepest bg - main canvas */
+  --color-base-100: #161b22;  /* card/elevated bg */
+  --color-base-200: #21262d;  /* hover states, footer */
+  --color-base-300: #30363d;  /* borders, dividers */
+  --color-base-content: #e6edf3; /* primary text - light gray */
+
+  /* Text tones */
+  --text-12: var(--color-base-content);
+  --text-10: color-mix(in oklab, var(--color-base-content) 60%, transparent);
+
+  /* Brand / actions - GitHub-inspired green */
+  --color-primary: #3fb950;            /* vibrant green accent */
+  --color-primary-content: #0d1117;    /* dark text on green */
+  --color-secondary: #21262d;          /* neutral elevated surface */
+  --color-secondary-content: #e6edf3;
+  --link: #58a6ff;                     /* softer blue for links */
+  --link-hover: #79c0ff;
+
+  /* Borders / elevation */
+  --border: 1px;
+  --border-color-soft: rgba(240, 246, 252, 0.1); /* subtle light borders */
+
+  /* Radii + misc */
+  --radius-xs: 3px;
+  --radius-sm: 5px;
+  --radius-field: 8px;
+  --radius-box: 10px;
+
+  --radius-selector: var(--radius-sm);
+  --depth: 1;
+  --noise: 0;
+}
+
+/* Page background & base text for dark theme */
+html,
+html[data-theme="darkChirper"],
+:root:has(input.theme-controller[value=darkChirper]:checked) body {
+    background: var(--color-base-50);
+    color: var(--text-12);
+}
+
+/* ============================================ */
+/* LIGHT THEME (OPTIONAL TOGGLE)               */
+/* ============================================ */
 :root:has(input.theme-controller[value=laravelChirper]:checked),
 [data-theme="laravelChirper"] {
   color-scheme: light;
@@ -38,17 +90,17 @@
   --text-12: var(--color-base-content);
   --text-10: color-mix(in oklab, var(--color-base-content) 64%, transparent);
 
-  /* Brand / actions */
-  --color-primary: #5580d2;            /* cooler button blue */
+  /* Brand / actions - keep green for consistency */
+  --color-primary: #2da44e;            /* GitHub green for light mode */
   --color-primary-content: #ffffff;
   --color-secondary: #2f3136;          /* neutral charcoal */
   --color-secondary-content: #ffffff;
-  --link: #5580d2;
-  --link-hover: color-mix(in oklab, #5580d2 80%, black);
+  --link: #0969da;                     /* GitHub blue for light */
+  --link-hover: #0550ae;
 
   /* Borders / elevation */
   --border: 1px;
-  --border-color-soft: rgba(0, 0, 0, 0.08); /* slightly stronger for visibility */
+  --border-color-soft: rgba(0, 0, 0, 0.08);
 
   /* Radii + misc */
   --radius-xs: 3px;
@@ -57,24 +109,30 @@
   --radius-box: 10px;
 
   --radius-selector: var(--radius-sm);
-  --radius-field: var(--radius-field);
-  --radius-box: var(--radius-box);
-
   --depth: 1;
   --noise: 0;
 }
 
-/* Page background & base text */
+/* Page background & base text for light theme */
 html[data-theme="laravelChirper"],
 :root:has(input.theme-controller[value=laravelChirper]:checked) body {
+    background: var(--color-base-50);
     color: var(--text-12);
 }
 
-/* Navbar = sand + hairline bottom */
+/* ============================================ */
+/* SHARED COMPONENT STYLES                      */
+/* ============================================ */
+
+/* Navbar = translucent + hairline bottom */
 .navbar {
     background: var(--color-base-100);
     border-bottom: var(--border) solid var(--border-color-soft);
     backdrop-filter: saturate(140%) blur(6px);
+}
+
+.navbar svg {
+    color: var(--text-12); /* This will use your theme's text color */
 }
 
 /* Cards — no shadow, soft border, tidy radius */
@@ -84,9 +142,7 @@ html[data-theme="laravelChirper"],
     border-radius: var(--radius-box);
     border: var(--border) solid var(--border-color-soft);
     box-shadow: none !important;
-    /* kill all shadows */
     transition: none;
-    /* no hover lift */
 }
 
 :where(.card:hover),
@@ -99,28 +155,26 @@ html[data-theme="laravelChirper"],
     padding: .875rem .875rem 1.125rem;
 }
 
-/* a hair more breathing room */
-
 /* INPUTS / TEXTAREAS */
 :where(.input, .textarea) {
     border-radius: var(--radius-field);
     border: var(--border) solid var(--border-color-soft);
-    background: #fff;
+    background: var(--color-base-50);
+    color: var(--text-12);
 }
 
-/* reduce default textarea padding a touch */
 :where(.textarea) {
     padding: .625rem .75rem;
 }
 
-/* inside cards, a hair tighter */
 .card :where(.textarea) {
     padding: .5625rem .75rem;
 }
 
 :where(.input:focus, .textarea:focus) {
-    outline: 2px solid color-mix(in oklab, var(--color-primary) 25%, transparent);
+    outline: 2px solid color-mix(in oklab, var(--color-primary) 30%, transparent);
     outline-offset: 2px;
+    border-color: var(--color-primary);
 }
 
 /* LINKS (site-wide) */
@@ -132,7 +186,7 @@ a:hover {
     color: var(--link-hover);
 }
 
-/* Fix: anchor-buttons should NOT be blue like links */
+/* Fix: anchor-buttons should NOT be colored like links */
 :where(a.btn) {
     color: inherit;
     text-decoration: none;
@@ -143,13 +197,9 @@ a:hover {
     border-radius: 5px;
     box-shadow: none;
     font-weight: 500;
-    /* medium */
     font-size: 0.875rem;
-    /* Tailwind text-base */
     line-height: 1.25rem;
-    /* align with text-base */
     padding-inline: 1rem;
-    /* a bit more horizontal breathing room */
 }
 
 :where(.btn-primary),
@@ -173,7 +223,7 @@ a:hover {
 
 :where(.btn-ghost:hover),
 :where(a.btn-ghost:hover) {
-    background: rgba(0, 0, 0, 0.03);
+    background: var(--color-base-200);
 }
 
 :where(.btn-sm) {
@@ -189,17 +239,16 @@ a:hover {
     font-size: .75rem;
 }
 
-/* Toast-only success color */
+/* Toast success - keep green consistent */
 :where(.toast) {
-    --color-success: #598b6e;
-    --color-success-content: #ffffff;
+    --color-success: #3fb950;
+    --color-success-content: #0d1117;
 }
 
-/* Hairline border + ensure text/icons pick up the content color */
 :where(.toast .alert-success) {
     background: var(--color-success);
     color: var(--color-success-content);
-    border: var(--border) solid rgba(0, 0, 0, 0.08);
+    border: var(--border) solid rgba(255, 255, 255, 0.1);
 }
 
 :where(.link-primary) {
@@ -207,10 +256,10 @@ a:hover {
 }
 
 :where(.link-primary:hover) {
-    color: color-mix(in oklab, var(--color-primary) 85%, black) !important;
+    color: color-mix(in oklab, var(--color-primary) 80%, white) !important;
 }
 
-/* Timestamps / separators (like your `·` and “ago”) */
+/* Timestamps / separators */
 .text-base-content\\/60 {
     color: var(--text-10) !important;
 }
@@ -219,9 +268,10 @@ a:hover {
 footer.footer {
     background: var(--color-base-200);
     color: var(--text-10);
+    border-top: var(--border) solid var(--border-color-soft);
 }
 
-/* 1) Links shouldn't style buttons (fixes blue anchor-buttons) */
+/* Links shouldn't style buttons */
 a:not(.btn) {
     color: var(--link);
 }
@@ -247,12 +297,11 @@ a.btn-primary:visited {
     color: var(--color-primary-content) !important;
 }
 
-/* keep ghost text from turning blue on hover */
 a.btn-ghost:hover {
     color: var(--text-12) !important;
 }
 
-/* 2) Auth inputs full width inside cards/labels */
+/* Auth inputs full width inside cards/labels */
 .card .input,
 .card .textarea,
 .floating-label>input,
@@ -261,22 +310,12 @@ a.btn-ghost:hover {
     width: 100%;
 }
 
-/* 3) Slightly rounder cards & fields*/
-:root:has(input.theme-controller[value=laravelChirper]:checked),
-[data-theme="laravelChirper"] {
-    --radius-box: 10px;
-    /* was 8px */
-    --radius-field: 8px;
-    /* was 6px */
-    --noise: 0;
-    /* was 1; Community look is clean */
-}
-
-/* ensure cards pick up the token over defaults */
+/* Ensure cards pick up the border radius */
 .card {
     border-radius: var(--radius-box) !important;
 }
 
+/* Typography - keep elegant and light */
 h1,
 h2,
 h3,
@@ -284,4 +323,5 @@ h4,
 h5,
 h6 {
     font-weight: 400 !important;
+    color: var(--text-12);
 }
