@@ -1,85 +1,82 @@
-```bash
-# Clone the Repository
-git clone https://github.com/dafwa/belajar-laravel.git
+# belajar-laravel – Chirper with Admin Dashboard
 
-# Go to the Project Folder
+Simple microblog (“chirps”) built on **Laravel 12 / PHP 8.2**, Blade, Tailwind CSS v4, and Vite. Users can post short updates, edit/delete their own chirps, and admins can manage users and all chirps from a dashboard.
+
+## Features
+- Public feed of the latest 50 chirps.
+- Authenticated users can create, edit, and delete their own chirps (policy protected).
+- Admin dashboard with stats, recent activity, user management, and chirp moderation.
+- Dark/light theme toggle (DaisyUI CDN + custom Tailwind tokens).
+- Axios-ready bootstrap (for future AJAX use); current UI is server-rendered Blade.
+
+## Stack
+- Backend: Laravel 12, PHP 8.2; Pest for testing; Laravel Pint (dev) for linting.
+- Frontend: Blade, Tailwind CSS v4 via `@tailwindcss/vite`, DaisyUI CDN, Vite bundler.
+- Database: default Laravel stack; chirps table with cascade delete on users.
+
+## Quickstart
+```bash
+git clone https://github.com/dafwa/belajar-laravel.git
 cd belajar-laravel
 
-# Run both npm install and run build for dependencies
 npm install && npm run build
-
-# Run composer install for dependencies
 composer install
-
-# Copy env
 cp .env.example .env
-
-# Generate key
 php artisan key:generate
-
-# Migrate database
 php artisan migrate
 
-# Run Project
+# Dev servers (PHP + queue listener + Vite)
 composer run dev
 ```
 
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+Handy composer scripts:
+- `composer setup` – install PHP deps, ensure `.env`, keygen, migrate (force), npm install, build.
+- `composer dev` – run `php artisan serve`, queue listener, and `npm run dev` via `concurrently`.
+- `composer test` – clear config then `php artisan test` (Pest).
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Admin Access
+- Users have an `is_admin` boolean. Admin-only routes use `IsAdmin` middleware (aliased as `admin`).
+- Create an admin manually:
+  ```php
+  php artisan tinker
+  \App\Models\User::create([
+      'name' => 'Admin',
+      'email' => 'admin@example.com',
+      'password' => bcrypt('password'),
+      'is_admin' => true,
+  ]);
+  ```
 
-## About Laravel
+## Key Routes
+- Public: `GET /` feed.
+- Auth: `POST /chirps`, `GET /chirps/{chirp}/edit`, `PUT /chirps/{chirp}`, `DELETE /chirps/{chirp}`.
+- Auth (guest): `GET|POST /register`, `GET|POST /login`; Logout `POST /logout`.
+- Admin (auth + admin): `GET /admin` dashboard; `/admin/users` list/delete (admins protected); `/admin/chirps` list/edit/update/delete.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Notable Implementation Details
+- Policy: `ChirpPolicy` restricts update/delete to the owner; other abilities return false (creation is enforced by route auth).
+- Chirps `user_id` is nullable; UI handles anonymous avatars gracefully.
+- Middleware alias registered in `bootstrap/app.php`.
+- Tailwind theme tokens and DaisyUI provide the dark/light toggle; success toasts auto-fade.
 
--   [Simple, fast routing engine](https://laravel.com/docs/routing).
--   [Powerful dependency injection container](https://laravel.com/docs/container).
--   Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
--   Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
--   Database agnostic [schema migrations](https://laravel.com/docs/migrations).
--   [Robust background job processing](https://laravel.com/docs/queues).
--   [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Project Layout Highlights
+- `app/Http/Controllers/ChirpController.php` – feed + CRUD.
+- `app/Http/Controllers/AdminController.php` – dashboard, user/chirp management.
+- `app/Http/Middleware/IsAdmin.php` – admin gate.
+- `app/Policies/ChirpPolicy.php` – ownership enforcement.
+- `resources/views/` – Blade layouts, auth screens, feed, admin pages.
+- `resources/css/app.css` – Tailwind v4 + custom themes; `resources/js/bootstrap.js` – Axios setup.
+- `database/migrations/` – chirps table, `is_admin` column, cascade delete update.
+- `add_admin_guide.md` – step-by-step notes on how the admin feature was added.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Testing
+- Pest is available (`./vendor/bin/pest` or `composer test`). Current suite is the Laravel examples; add feature tests for chirp CRUD and admin flows as needed.
 
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
-
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-## Laravel Sponsors
-
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
-
-### Premium Partners
-
--   **[Vehikl](https://vehikl.com)**
--   **[Tighten Co.](https://tighten.co)**
--   **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
--   **[64 Robots](https://64robots.com)**
--   **[Curotec](https://www.curotec.com/services/technologies/laravel)**
--   **[DevSquad](https://devsquad.com/hire-laravel-developers)**
--   **[Redberry](https://redberry.international/laravel-development)**
--   **[Active Logic](https://activelogic.com)**
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Security / Limitations
+- No email verification or password reset flows included.
+- No rate limiting or spam controls; feed is public, mutations require auth.
+- Admin users cannot be deleted via UI; deleting a user cascades their chirps via DB FK.
 
 ## License
+MIT (Laravel skeleton). See `LICENSE` in the upstream Laravel repo; this project follows the same license. If you modify and redistribute, keep the license notice intact.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
